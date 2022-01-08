@@ -62,9 +62,9 @@ class EngineWrapper:
     def search_for(self, board, movetime, ponder, draw_offered):
         return self.search(board, chess.engine.Limit(time=movetime // 1000), ponder, draw_offered)
 
-    def first_search(self, board, movetime, draw_offered):
+    def first_search(self, board, movetime, draw_offered, moves):
         # No pondering after the first move since a different clock is used afterwards.
-        return self.search(board, chess.engine.Limit(time=movetime // 1000), False, draw_offered)
+        return self.search(board, chess.engine.Limit(time=movetime // 1000), False, draw_offered, moves)
 
     def search_with_ponder(self, board, wtime, btime, winc, binc, ponder, draw_offered):
         cmds = self.go_commands
