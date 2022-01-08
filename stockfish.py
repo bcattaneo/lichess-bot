@@ -6,7 +6,7 @@ import chess
 MOVEMENT_PREFIX = "position startpos move"
 
 
-class Game:
+class StockfishGame:
     def __init__(self, stockfish_path, starting_position=[], depth=20):
         self.board = chess.Board()
         self.position = starting_position

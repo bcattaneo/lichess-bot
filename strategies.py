@@ -7,7 +7,12 @@ import chess
 from chess.engine import PlayResult
 import random
 from engine_wrapper import EngineWrapper
-from game import Game
+from stockfish import StockfishGame
+from dotenv import load_dotenv
+from os import environ
+load_dotenv()
+
+STOCKFISH_PATH = environ.get("stockfish-path")
 
 
 class FillerEngine:
@@ -98,8 +103,7 @@ class ExampleEngine(MinimalEngine):
 
 class Stockfish(MinimalEngine):
     def search(self, board, *args):
-        stockfish_path = "C:\stockfish\stockfish.exe"  # TODO: move to env
-        game = Game(stockfish_path, args[3].split())
+        game = StockfishGame(STOCKFISH_PATH, args[3].split())
         print("Calculating best Stockfish move...")
         move = chess.Move.from_uci(game.best_move())
         print(f"Best Stockfish move: {move}")
