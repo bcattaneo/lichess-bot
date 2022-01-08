@@ -103,7 +103,8 @@ class ExampleEngine(MinimalEngine):
 
 class Stockfish(MinimalEngine):
     def search(self, board, *args):
-        game = StockfishGame(STOCKFISH_PATH, args[3].split())
+        moves = args[3]  # uci moves so far
+        game = StockfishGame(STOCKFISH_PATH, moves)
         print("Calculating best Stockfish move...")
         move = chess.Move.from_uci(game.best_move())
         print(f"Best Stockfish move: {move}")

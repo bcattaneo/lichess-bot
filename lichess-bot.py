@@ -340,7 +340,7 @@ def choose_first_move(engine, board, draw_offered, game):
     # need to hardcode first movetime (10000 ms) since Lichess has 30 sec limit.
     search_time = 10000
     logger.info("Searching for time {}".format(search_time))
-    return engine.first_search(board, search_time, draw_offered, game.state["moves"])
+    return engine.first_search(board, search_time, draw_offered, game.state["moves"].split())
 
 
 def get_book_move(board, polyglot_cfg):
@@ -562,7 +562,7 @@ def choose_move(engine, board, game, ponder, draw_offered, start_time, move_over
         btime = max(0, btime - move_overhead - pre_move_time)
 
     logger.info("Searching for wtime {} btime {}".format(wtime, btime))
-    return engine.search_with_ponder(board, wtime, btime, game.state["winc"], game.state["binc"], ponder, draw_offered, game.state["moves"])
+    return engine.search_with_ponder(board, wtime, btime, game.state["winc"], game.state["binc"], ponder, draw_offered, game.state["moves"].split())
 
 
 def check_for_draw_offer(game):
