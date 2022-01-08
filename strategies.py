@@ -7,6 +7,7 @@ import chess
 from chess.engine import PlayResult
 import random
 from engine_wrapper import EngineWrapper
+from game import Game
 
 
 class FillerEngine:
@@ -16,6 +17,7 @@ class FillerEngine:
     This is only used to provide the property "self.engine"
     in "MinimalEngine" which extends "EngineWrapper"
     """
+
     def __init__(self, main_engine, name=None):
         self.id = {
             "name": name
@@ -45,6 +47,7 @@ class MinimalEngine(EngineWrapper):
     however you can also change other methods like
     `notify`, `first_search`, `get_time_control`, etc.
     """
+
     def __init__(self, *args, name=None):
         super().__init__(*args)
 
@@ -56,15 +59,15 @@ class MinimalEngine(EngineWrapper):
             "name": self.engine_name
         }
 
-    def search_with_ponder(self, board, wtime, btime, winc, binc, ponder, draw_offered):
+    def search_with_ponder(self, board, wtime, btime, winc, binc, ponder, draw_offered, moves):
         timeleft = 0
         if board.turn:
             timeleft = wtime
         else:
             timeleft = btime
-        return self.search(board, timeleft, ponder, draw_offered)
+        return self.search(board, timeleft, ponder, draw_offered, moves)
 
-    def search(self, board, timeleft, ponder, draw_offered):
+    def search(self, board, timeleft, ponder, draw_offered, moves):
         """
         The method to be implemented in your homemade engine
 
@@ -93,6 +96,16 @@ class ExampleEngine(MinimalEngine):
 
 # Strategy names and ideas from tom7's excellent eloWorld video
 
+class Stockfish(MinimalEngine):
+    def search(self, board, *args):
+        stockfish_path = "C:\stockfish\stockfish.exe"  # TODO: move to env
+        game = Game(stockfish_path, args[3].split())
+        print("Calculating best Stockfish move...")
+        move = chess.Move.from_uci(game.best_move())
+        print(f"Best Stockfish move: {move}")
+        return PlayResult(move, None)
+
+
 class RandomMove(ExampleEngine):
     def search(self, board, *args):
         return PlayResult(random.choice(list(board.legal_moves)), None)
@@ -107,6 +120,7 @@ class Alphabetical(ExampleEngine):
 
 class FirstMove(ExampleEngine):
     """Gets the first move when sorted by uci representation"""
+
     def search(self, board, *args):
         moves = list(board.legal_moves)
         moves.sort(key=str)
