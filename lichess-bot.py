@@ -282,10 +282,10 @@ def play_game(li, game_id, control_queue, engine_factory, user_profile, config, 
                         draw_offered = check_for_draw_offer(game)
 
                         if len(board.move_stack) < 2:
-                            conversation.send_message("player", hello)
-                            best_move = choose_first_move(engine, board, draw_offered)
+                            # conversation.send_message("player", hello)
+                            best_move = choose_first_move(engine, board, draw_offered, game)
                         elif is_correspondence:
-                            best_move = choose_move_time(engine, board, correspondence_move_time, can_ponder, draw_offered)
+                            best_move = choose_move_time(engine, board, correspondence_move_time, can_ponder, draw_offered, game)
                         else:
                             best_move = choose_move(engine, board, game, can_ponder, draw_offered, start_time, move_overhead)
                     if best_move.resigned:
@@ -295,7 +295,7 @@ def play_game(li, game_id, control_queue, engine_factory, user_profile, config, 
                     time.sleep(delay_seconds)
                 elif is_game_over(game):
                     engine.report_game_result(game, board)
-                    conversation.send_message("player", goodbye)
+                    # conversation.send_message("player", goodbye)
                 elif len(board.move_stack) == 0:
                     correspondence_disconnect_time = correspondence_cfg.get("disconnect_time", 300)
 
@@ -331,16 +331,16 @@ def play_game(li, game_id, control_queue, engine_factory, user_profile, config, 
     control_queue.put_nowait({"type": "local_game_done"})
 
 
-def choose_move_time(engine, board, search_time, ponder, draw_offered):
+def choose_move_time(engine, board, search_time, ponder, draw_offered, game):
     logger.info("Searching for time {}".format(search_time))
     return engine.search_for(board, search_time, ponder, draw_offered)
 
 
-def choose_first_move(engine, board, draw_offered):
+def choose_first_move(engine, board, draw_offered, game):
     # need to hardcode first movetime (10000 ms) since Lichess has 30 sec limit.
     search_time = 10000
     logger.info("Searching for time {}".format(search_time))
-    return engine.first_search(board, search_time, draw_offered)
+    return engine.first_search(board, search_time, draw_offered, game.state["moves"].split())
 
 
 def get_book_move(board, polyglot_cfg):
@@ -562,7 +562,7 @@ def choose_move(engine, board, game, ponder, draw_offered, start_time, move_over
         btime = max(0, btime - move_overhead - pre_move_time)
 
     logger.info("Searching for wtime {} btime {}".format(wtime, btime))
-    return engine.search_with_ponder(board, wtime, btime, game.state["winc"], game.state["binc"], ponder, draw_offered)
+    return engine.search_with_ponder(board, wtime, btime, game.state["winc"], game.state["binc"], ponder, draw_offered, game.state["moves"].split())
 
 
 def check_for_draw_offer(game):
